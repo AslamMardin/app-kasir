@@ -1,0 +1,33 @@
+@extends('layouts.app')
+@section('title', 'Kategori')
+@section('page_title', 'Manajemen Kategori')
+
+@section('content')
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <p style="color: var(--text-muted);">Daftar kategori produk</p>
+    <a href="/categories/create" class="btn btn-primary"><i data-lucide="plus" style="width:16px;"></i> Tambah Kategori</a>
+</div>
+@if(session('success'))
+    <div style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.875rem;">{{ session('success') }}</div>
+@endif
+<div class="glass-card" style="padding: 0; overflow: hidden;">
+    <table class="data-table">
+        <thead><tr><th>Nama</th><th>Slug</th><th>Jumlah Produk</th><th>Aksi</th></tr></thead>
+        <tbody>
+            @forelse($categories as $cat)
+            <tr>
+                <td>{{ $cat->name }}</td>
+                <td style="color: var(--text-muted);">{{ $cat->slug }}</td>
+                <td>{{ $cat->products_count }}</td>
+                <td>
+                    <a href="/categories/{{ $cat->id }}/edit" style="color: var(--accent); text-decoration: none; margin-right: 0.5rem;">Edit</a>
+                    <form action="/categories/{{ $cat->id }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kategori?')">@csrf @method('DELETE')<button style="color: var(--danger); background:none; border:none; cursor:pointer;">Hapus</button></form>
+                </td>
+            </tr>
+            @empty
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Belum ada kategori</td></tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+@endsection
