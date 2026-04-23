@@ -47,4 +47,10 @@ Route::middleware('auth')->group(function () {
     // Reports
     Route::get('/reports/daily', [ReportController::class, 'daily']);
     Route::get('/reports/daily/pdf', [ReportController::class, 'downloadPdf']);
+
+    // Settings
+    Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index']);
+    Route::post('/settings/update', [\App\Http\Controllers\SettingController::class, 'update']);
+    Route::post('/settings/password', [\App\Http\Controllers\SettingController::class, 'changePassword']);
+    Route::get('/settings/backup', [\App\Http\Controllers\SettingController::class, 'backup']);
 });

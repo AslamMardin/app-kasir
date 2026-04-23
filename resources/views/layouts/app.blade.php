@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') | Toko Campalagian</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <title>@yield('title', 'Dashboard') | {{ $appName }}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v=2">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     @stack('css')
@@ -17,7 +17,7 @@
             <div style="background: var(--accent); padding: 0.5rem; border-radius: 8px;">
                 <i data-lucide="shopping-cart" style="color: white;"></i>
             </div>
-            <h2 style="font-size: 1.25rem; font-weight: 700;">Campalagian</h2>
+            <h2 style="font-size: 1.25rem; font-weight: 700;">{{ $appName }}</h2>
         </div>
 
         <nav>
@@ -41,6 +41,9 @@
             </a>
             <a href="/reports/daily" class="nav-link {{ request()->is('reports*') ? 'active' : '' }}">
                 <i data-lucide="bar-chart-3" style="margin-right:2px"></i> Laporan
+            </a>
+            <a href="/settings" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
+                <i data-lucide="settings" style="margin-right:2px"></i> Pengaturan
             </a>
         </nav>
 
@@ -81,6 +84,10 @@
     </main>
 
     <script>
+        // Load Theme from LocalStorage before rendering to avoid flicker
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
         lucide.createIcons();
 
         // Realtime Clock

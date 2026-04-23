@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        try {
+            $appName = \App\Models\Setting::where('key', 'app_name')->first()->value ?? 'Toko Campalagian';
+            \Illuminate\Support\Facades\View::share('appName', $appName);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\View::share('appName', 'Toko Campalagian');
+        }
     }
 }

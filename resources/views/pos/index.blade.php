@@ -137,7 +137,15 @@
         <h3 style="margin-bottom: 0.5rem;">Transaksi Berhasil!</h3>
         <p id="successInvoice" style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;"></p>
         <p id="successChange" style="font-size: 1.25rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem;"></p>
-        <button class="pay-btn" onclick="newTransaction()">Transaksi Baru</button>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <button class="pay-btn" id="printReceiptBtn" style="background: #334155;">
+                <i data-lucide="printer" style="width: 20px; display: inline; vertical-align: middle;"></i> Cetak Struk
+            </button>
+            <button class="pay-btn" onclick="newTransaction()">
+                <i data-lucide="plus" style="width: 20px; display: inline; vertical-align: middle;"></i> Transaksi Baru
+            </button>
+        </div>
     </div>
 </div>
 @endsection
@@ -314,6 +322,13 @@ function processPayment() {
         closePaymentModal();
         document.getElementById('successInvoice').textContent = data.invoice_number;
         document.getElementById('successChange').textContent = selectedPaymentMethod === 'cash' ? 'Kembalian: Rp ' + Number(data.change_amount).toLocaleString('id-ID') : 'Pembayaran ' + selectedPaymentMethod.toUpperCase();
+        
+        // Update tautan cetak struk
+        const printBtn = document.getElementById('printReceiptBtn');
+        printBtn.onclick = function() {
+            window.open('/pos/receipt/' + data.transaction.id, '_blank', 'width=400,height=600');
+        };
+
         document.getElementById('successModal').classList.add('active');
         lucide.createIcons();
     })
