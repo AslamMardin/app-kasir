@@ -9,7 +9,15 @@
         <form method="POST" action="/products">
             @csrf
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group"><label class="form-label">Barcode</label><input type="text" name="barcode" class="form-input" value="{{ old('barcode') }}" required></div>
+                <div class="form-group">
+                    <label class="form-label">Barcode</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" name="barcode" id="barcodeInput" class="form-input" value="{{ old('barcode', $defaultBarcode) }}" required>
+                        <button type="button" onclick="generateBarcode()" class="btn btn-primary" style="padding: 0.5rem; background: #334155;" title="Generate Ulang">
+                            <i data-lucide="refresh-cw" style="width: 16px;"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="form-group"><label class="form-label">Nama Produk</label><input type="text" name="name" class="form-input" value="{{ old('name') }}" required></div>
                 <div class="form-group"><label class="form-label">Kategori</label><select name="category_id" class="form-input" required>@foreach($categories as $cat)<option value="{{ $cat->id }}">{{ $cat->name }}</option>@endforeach</select></div>
                 <div class="form-group"><label class="form-label">Unit</label><select name="unit" class="form-input"><option value="pcs">pcs</option><option value="kg">kg</option><option value="liter">liter</option></select></div>
@@ -24,3 +32,13 @@
     </div>
 </div>
 @endsection
+
+@push('js')
+<script>
+    function generateBarcode() {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const random = Math.floor(Math.random() * 90) + 10;
+        document.getElementById('barcodeInput').value = timestamp.toString() + random.toString();
+    }
+</script>
+@endpush

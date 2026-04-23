@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Picqer\Barcode\BarcodeGeneratorSVG;
 
 class ProductController extends Controller
 {
@@ -26,7 +27,9 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('products.create', compact('categories'));
+        // Generate random 12 digit barcode
+        $defaultBarcode = time() . rand(10, 99);
+        return view('products.create', compact('categories', 'defaultBarcode'));
     }
 
     public function store(Request $request)
@@ -73,5 +76,13 @@ class ProductController extends Controller
     {
         $product->delete();
         return redirect('/products')->with('success', 'Produk berhasil dihapus.');
+    }
+
+    public function printBarcode(Product $product)
+    {
+        $generator = new BarcodeGeneratorSVG();
+        $barcode = $generator->getBarcode($product->barcode, $generator::TYPE_CODE_128);
+
+        return view('products.barcode', compact('product', 'barcode'));
     }
 }

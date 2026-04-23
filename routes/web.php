@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pos/receipt/{transaction}', [POSController::class, 'receipt']);
 
     // Master Data
+    Route::get('/products/{product}/barcode', [\App\Http\Controllers\ProductController::class, 'printBarcode']);
     Route::resource('products', ProductController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('members', MemberController::class);

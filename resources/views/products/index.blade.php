@@ -31,11 +31,18 @@
                     <span style="color: {{ $product->stock <= $product->min_stock ? 'var(--danger)' : 'var(--accent)' }}; font-weight: 600;">{{ $product->stock }}</span>
                     {{ $product->unit }}
                 </td>
-                <td>
-                    <a href="/products/{{ $product->id }}/edit" style="color: var(--accent); text-decoration: none; margin-right: 0.5rem;">Edit</a>
+                <td style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="/products/{{ $product->id }}/barcode" title="Cetak Barcode" style="color: var(--text-muted); transition: color 0.2s;" target="_blank">
+                        <i data-lucide="barcode" style="width: 20px;"></i>
+                    </a>
+                    <a href="/products/{{ $product->id }}/edit" title="Edit Produk" style="color: var(--accent); transition: color 0.2s;">
+                        <i data-lucide="edit-3" style="width: 20px;"></i>
+                    </a>
                     <form action="/products/{{ $product->id }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus produk ini?')">
                         @csrf @method('DELETE')
-                        <button style="color: var(--danger); background:none; border:none; cursor:pointer;">Hapus</button>
+                        <button type="submit" title="Hapus Produk" style="color: var(--danger); background:none; border:none; cursor:pointer; padding: 0; display: flex; align-items: center;">
+                            <i data-lucide="trash-2" style="width: 20px;"></i>
+                        </button>
                     </form>
                 </td>
             </tr>
