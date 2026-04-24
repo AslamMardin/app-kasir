@@ -139,6 +139,17 @@ body {
     transition: border-color 0.2s;
 }
 
+select.form-input option {
+    background-color: #1e293b !important; /* Biru gelap sidebar */
+    color: #f8fafc !important; /* Putih terang */
+}
+
+/* Fallback jika browser memaksa background putih (biasanya di beberapa browser Windows) */
+[data-theme="light"] select.form-input option {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+
 .form-input:focus {
     border-color: var(--accent);
 }

@@ -39,8 +39,11 @@
             <a href="/transactions" class="nav-link {{ request()->is('transactions*') ? 'active' : '' }}">
                 <i data-lucide="history" style="margin-right:2px"></i> Transaksi
             </a>
-            <a href="/reports/daily" class="nav-link {{ request()->is('reports*') ? 'active' : '' }}">
-                <i data-lucide="bar-chart-3" style="margin-right:2px"></i> Laporan
+            <a href="/reports/daily" class="nav-link {{ request()->is('reports/daily*') ? 'active' : '' }}">
+                <i data-lucide="bar-chart-3" style="margin-right:2px"></i> Laporan Harian
+            </a>
+            <a href="/reports/monthly" class="nav-link {{ request()->is('reports/monthly*') ? 'active' : '' }}">
+                <i data-lucide="calendar-days" style="margin-right:2px"></i> Laporan Bulanan
             </a>
             <a href="/settings" class="nav-link {{ request()->is('settings*') ? 'active' : '' }}">
                 <i data-lucide="settings" style="margin-right:2px"></i> Pengaturan

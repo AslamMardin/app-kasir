@@ -69,8 +69,16 @@ class POSController extends Controller
             $subtotal = 0;
             $itemsData = [];
 
+            // Load all products at once to avoid N+1 inside loop
+            $productIds = collect($request->items)->pluck('product_id');
+            $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
             foreach ($request->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
+                $product = $products->get($item['product_id']);
+
+                if (!$product) {
+                    throw new \Exception("Produk dengan ID {$item['product_id']} tidak ditemukan.");
+                }
 
                 if ($product->stock < $item['quantity']) {
                     throw new \Exception("Stok {$product->name} tidak mencukupi.");

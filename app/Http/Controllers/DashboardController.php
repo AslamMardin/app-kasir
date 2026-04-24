@@ -25,20 +25,37 @@ class DashboardController extends Controller
         $totalProducts = Product::where('is_active', true)->count();
         $totalMembers = Member::count();
 
+        $salesThisMonth = Transaction::where('status', 'completed')
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->sum('grand_total');
+
         $lowStockProducts = Product::where('is_active', true)
             ->whereColumn('stock', '<=', 'min_stock')
             ->take(5)
             ->get();
 
-        // Sales last 7 days
+        // Sales last 7 days - Optimized to single query
+        $salesData = Transaction::where('status', 'completed')
+            ->where('created_at', '>=', Carbon::today()->subDays(6))
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(grand_total) as total'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
+
         $salesChart = [];
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
+            $dateStr = $date->toDateString();
+            $dayData = $salesData->get($dateStr);
             $salesChart[] = [
                 'date' => $date->format('d/m'),
-                'total' => Transaction::where('status', 'completed')
-                    ->whereDate('created_at', $date)
-                    ->sum('grand_total'),
+                'total' => $dayData->total ?? 0,
+                'count' => $dayData->count ?? 0,
             ];
         }
 
@@ -58,6 +75,7 @@ class DashboardController extends Controller
             'transactionsToday',
             'totalProducts',
             'totalMembers',
+            'salesThisMonth',
             'lowStockProducts',
             'salesChart',
             'topProducts'

@@ -30,6 +30,9 @@ class TransactionController extends Controller
     public function void(Request $request, Transaction $transaction)
     {
         $request->validate(['void_reason' => 'required|string|min:5']);
+        
+        $transaction->load('items.product');
+
         if ($transaction->status === 'voided') {
             return back()->with('error', 'Transaksi sudah di-void.');
         }

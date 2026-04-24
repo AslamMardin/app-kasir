@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
     // Reports
     Route::get('/reports/daily', [ReportController::class, 'daily']);
     Route::get('/reports/daily/pdf', [ReportController::class, 'downloadPdf']);
+    Route::get('/reports/monthly', [ReportController::class, 'monthly']);
+    Route::get('/reports/monthly/pdf', [ReportController::class, 'downloadMonthlyPdf']);
 
     // Settings
     Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index']);

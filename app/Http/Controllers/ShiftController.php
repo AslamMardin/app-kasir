@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Shift;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class ShiftController extends Controller
 {
@@ -44,30 +44,24 @@ class ShiftController extends Controller
             ->whereNull('closed_at')
             ->first();
 
-        if (!$shift) {
+        if (! $shift) {
             return redirect('/dashboard')->with('warning', 'Tidak ada shift aktif.');
         }
 
-        // Calculate expected cash
-        $cashSales = Transaction::where('shift_id', $shift->id)
+        // Calculate expected cash - Optimized to single query
+        $stats = Transaction::where('shift_id', $shift->id)
             ->where('status', 'completed')
-            ->where('payment_method', 'cash')
-            ->sum('grand_total');
+            ->selectRaw("
+                SUM(CASE WHEN payment_method = 'cash' THEN grand_total ELSE 0 END) as cash_sales,
+                SUM(CASE WHEN payment_method = 'cash' THEN change_amount ELSE 0 END) as cash_change,
+                SUM(grand_total) as total_sales,
+                COUNT(*) as total_transactions
+            ")
+            ->first();
 
-        $cashChange = Transaction::where('shift_id', $shift->id)
-            ->where('status', 'completed')
-            ->where('payment_method', 'cash')
-            ->sum('change_amount');
-
-        $expectedCash = $shift->opening_cash + $cashSales - $cashChange;
-
-        $totalSales = Transaction::where('shift_id', $shift->id)
-            ->where('status', 'completed')
-            ->sum('grand_total');
-
-        $totalTransactions = Transaction::where('shift_id', $shift->id)
-            ->where('status', 'completed')
-            ->count();
+        $expectedCash = $shift->opening_cash + ($stats->cash_sales ?? 0) - ($stats->cash_change ?? 0);
+        $totalSales = $stats->total_sales ?? 0;
+        $totalTransactions = $stats->total_transactions ?? 0;
 
         return view('shift.close', compact('shift', 'expectedCash', 'totalSales', 'totalTransactions'));
     }
@@ -83,21 +77,19 @@ class ShiftController extends Controller
             ->whereNull('closed_at')
             ->first();
 
-        if (!$shift) {
+        if (! $shift) {
             return redirect('/dashboard')->with('warning', 'Tidak ada shift aktif.');
         }
 
-        $cashSales = Transaction::where('shift_id', $shift->id)
+        $stats = Transaction::where('shift_id', $shift->id)
             ->where('status', 'completed')
-            ->where('payment_method', 'cash')
-            ->sum('grand_total');
+            ->selectRaw("
+                SUM(CASE WHEN payment_method = 'cash' THEN grand_total ELSE 0 END) as cash_sales,
+                SUM(CASE WHEN payment_method = 'cash' THEN change_amount ELSE 0 END) as cash_change
+            ")
+            ->first();
 
-        $cashChange = Transaction::where('shift_id', $shift->id)
-            ->where('status', 'completed')
-            ->where('payment_method', 'cash')
-            ->sum('change_amount');
-
-        $expectedCash = $shift->opening_cash + $cashSales - $cashChange;
+        $expectedCash = $shift->opening_cash + ($stats->cash_sales ?? 0) - ($stats->cash_change ?? 0);
 
         $shift->update([
             'closed_at' => Carbon::now(),
